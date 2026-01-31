@@ -1,3 +1,0 @@
-PyQt5==5.15.9
-pywin32==305  # Windows系統API
-pyinstaller==5.9.0
