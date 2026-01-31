@@ -1,3 +1,32 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* Reset all backgrounds
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Make everything transparent */
+html,
+body,
+#root {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Remove default browser styles */
+body {
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+*/

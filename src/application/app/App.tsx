@@ -9,6 +9,7 @@ import { TimerPage } from '@/application/app/components/Timer/TimerPage';
 import { TodoList, Todo } from '@/application/app/components/Todo/TodoList';
 import { CalendarView } from '@/application/app/components/Todo/CalendarView';
 import { MemoGrid } from '@/application/app/components/Memo/MemoGrid';
+import './transparent.css';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('timer');
@@ -167,226 +168,224 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-8 flex items-center justify-center">
-      <div
-        className="rounded-2xl shadow-2xl border border-white/20 flex overflow-hidden select-none relative"
-        style={{
-          position: 'fixed',
-          left: position.x,
-          top: position.y,
-          width: size.width,
-          height: size.height,
-          cursor: isDragging ? 'grabbing' : 'default',
-          backgroundColor: `rgba(0, 0, 0, ${opacity * 0.4})`,
-          backdropFilter: 'blur(12px)',
-          zIndex: isPinned ? 9999 : 'auto',
-        }}
-        onMouseDown={handleMouseDown}
-      >
-        <VerticalTabs activeTab={activeTab} onTabChange={setActiveTab} />
+    <div
+    className="rounded-2xl shadow-2xl border border-white/20 flex overflow-hidden select-none relative"
+    style={{
+        position: 'fixed',
+        left: position.x,
+        top: position.y,
+        width: size.width,
+        height: size.height,
+        cursor: isDragging ? 'grabbing' : 'default',
+        backgroundColor: `rgba(0, 0, 0, ${opacity * 0.4})`,
+        backdropFilter: 'blur(12px)',
+        zIndex: isPinned ? 9999 : 'auto',
+    }}
+    onMouseDown={handleMouseDown}
+    >
+    <VerticalTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <div className="flex-1 flex flex-col">
-          {/* Drag Handle */}
-          <div className="drag-handle h-10 bg-black/20 backdrop-blur-sm border-b border-white/10 flex items-center px-3 gap-3 cursor-grab active:cursor-grabbing">
-            <GripVertical className="size-5 text-white/40" />
-            
-            <div className="flex items-center gap-2 flex-1">
-              <span className="text-xs text-white/50">Opacity</span>
-              <input
-                type="range"
-                min="0.3"
-                max="1"
-                step="0.05"
-                value={opacity}
-                onChange={(e) => setOpacity(parseFloat(e.target.value))}
-                onClick={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                className="flex-1 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:cursor-pointer"
-              />
-            </div>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsPinned(!isPinned);
-              }}
-              onMouseDown={(e) => e.stopPropagation()}
-              className={`p-1.5 rounded backdrop-blur-sm border transition-all ${
-                isPinned
-                  ? 'bg-white/30 border-white/50 text-white'
-                  : 'bg-white/10 border-white/20 text-white/60 hover:bg-white/20 hover:text-white'
-              }`}
-            >
-              {isPinned ? <Pin className="size-4" /> : <PinOff className="size-4" />}
-            </button>
-          </div>
-
-          {/* Content Area */}
-          <div className="flex-1 relative overflow-hidden">
-            <AnimatePresence mode="wait">
-              {activeTab === 'timer' && (
-                <motion.div
-                  key="timer"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="absolute inset-0 flex flex-col"
-                >
-                  <motion.div
-                    drag="x"
-                    dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.2}
-                    onDragEnd={handleTimerDragEnd}
-                    className="flex-1 relative overflow-hidden"
-                  >
-                    <AnimatePresence mode="wait" custom={timerPage}>
-                      {timerPage === 0 && (
-                        <motion.div
-                          key="stopwatch"
-                          initial={{ opacity: 0, x: -300 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -300 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                          className="absolute inset-0"
-                        >
-                          <Stopwatch />
-                        </motion.div>
-                      )}
-                      {timerPage === 1 && (
-                        <motion.div
-                          key="clock"
-                          initial={{ opacity: 0, x: timerPage > 1 ? -300 : 300 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: timerPage > 1 ? 300 : -300 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                          className="absolute inset-0"
-                        >
-                          <Clock />
-                        </motion.div>
-                      )}
-                      {timerPage === 2 && (
-                        <motion.div
-                          key="timer"
-                          initial={{ opacity: 0, x: 300 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 300 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                          className="absolute inset-0"
-                        >
-                          <TimerPage />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-
-                  {/* Dots Indicator */}
-                  <div className="flex justify-center gap-2 pb-4">
-                    {[0, 1, 2].map((index) => (
-                      <button
-                        key={index}
-                        onClick={() => setTimerPage(index as 0 | 1 | 2)}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          timerPage === index
-                            ? 'bg-white w-6'
-                            : 'bg-white/40 hover:bg-white/60'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {activeTab === 'todo' && (
-                <motion.div
-                  key="todo"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="absolute inset-0 flex flex-col"
-                >
-                  {/* Navigation */}
-                  <div className="absolute top-4 right-4 z-10 flex gap-2">
-                    <button
-                      onClick={() => {
-                        setSelectedDate(subDays(selectedDate, 1));
-                      }}
-                      className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full border border-white/20 transition-all"
-                    >
-                      <ChevronLeft className="size-4 text-white" />
-                    </button>
-                    <button
-                      onClick={() => setTodoView(todoView === 'calendar' ? 'today' : 'calendar')}
-                      className={`p-2 backdrop-blur-sm rounded-full border transition-all ${
-                        todoView === 'calendar'
-                          ? 'bg-white/30 border-white/40'
-                          : 'bg-white/10 hover:bg-white/20 border-white/20'
-                      }`}
-                    >
-                      <CalendarIcon className="size-4 text-white" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedDate(new Date(selectedDate.getTime() + 86400000));
-                      }}
-                      className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full border border-white/20 transition-all"
-                    >
-                      <ChevronRight className="size-4 text-white" />
-                    </button>
-                  </div>
-
-                  <AnimatePresence mode="wait">
-                    {todoView === 'calendar' ? (
-                      <motion.div
-                        key="calendar"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="flex-1"
-                      >
-                        <CalendarView
-                          onDateSelect={handleDateSelect}
-                          selectedDate={selectedDate}
-                          getTodosForDate={getTodosForDate}
-                        />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="todolist"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="flex-1"
-                      >
-                        <TodoList date={selectedDate} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-
-              {activeTab === 'memo' && (
-                <motion.div
-                  key="memo"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="absolute inset-0"
-                >
-                  <MemoGrid />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+    <div className="flex-1 flex flex-col">
+        {/* Drag Handle */}
+        <div className="drag-handle h-10 bg-black/20 backdrop-blur-sm border-b border-white/10 flex items-center px-3 gap-3 cursor-grab active:cursor-grabbing">
+        <GripVertical className="size-5 text-white/40" />
+        
+        <div className="flex items-center gap-2 flex-1">
+            <span className="text-xs text-white/50">Opacity</span>
+            <input
+            type="range"
+            min="0.3"
+            max="1"
+            step="0.05"
+            value={opacity}
+            onChange={(e) => setOpacity(parseFloat(e.target.value))}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="flex-1 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:cursor-pointer"
+            />
         </div>
 
-        {/* Resize Handle */}
-        <div
-          onMouseDown={handleResizeMouseDown}
-          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize group"
+        <button
+            onClick={(e) => {
+            e.stopPropagation();
+            setIsPinned(!isPinned);
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            className={`p-1.5 rounded backdrop-blur-sm border transition-all ${
+            isPinned
+                ? 'bg-white/30 border-white/50 text-white'
+                : 'bg-white/10 border-white/20 text-white/60 hover:bg-white/20 hover:text-white'
+            }`}
         >
-          <div className="absolute bottom-1 right-1 w-4 h-4 border-r-2 border-b-2 border-white/30 group-hover:border-white/60 transition-colors" />
+            {isPinned ? <Pin className="size-4" /> : <PinOff className="size-4" />}
+        </button>
         </div>
-      </div>
+
+        {/* Content Area */}
+        <div className="flex-1 relative overflow-hidden">
+        <AnimatePresence mode="wait">
+            {activeTab === 'timer' && (
+            <motion.div
+                key="timer"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="absolute inset-0 flex flex-col"
+            >
+                <motion.div
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={handleTimerDragEnd}
+                className="flex-1 relative overflow-hidden"
+                >
+                <AnimatePresence mode="wait" custom={timerPage}>
+                    {timerPage === 0 && (
+                    <motion.div
+                        key="stopwatch"
+                        initial={{ opacity: 0, x: -300 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -300 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="absolute inset-0"
+                    >
+                        <Stopwatch />
+                    </motion.div>
+                    )}
+                    {timerPage === 1 && (
+                    <motion.div
+                        key="clock"
+                        initial={{ opacity: 0, x: timerPage > 1 ? -300 : 300 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: timerPage > 1 ? 300 : -300 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="absolute inset-0"
+                    >
+                        <Clock />
+                    </motion.div>
+                    )}
+                    {timerPage === 2 && (
+                    <motion.div
+                        key="timer"
+                        initial={{ opacity: 0, x: 300 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 300 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="absolute inset-0"
+                    >
+                        <TimerPage />
+                    </motion.div>
+                    )}
+                </AnimatePresence>
+                </motion.div>
+
+                {/* Dots Indicator */}
+                <div className="flex justify-center gap-2 pb-4">
+                {[0, 1, 2].map((index) => (
+                    <button
+                    key={index}
+                    onClick={() => setTimerPage(index as 0 | 1 | 2)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                        timerPage === index
+                        ? 'bg-white w-6'
+                        : 'bg-white/40 hover:bg-white/60'
+                    }`}
+                    />
+                ))}
+                </div>
+            </motion.div>
+            )}
+
+            {activeTab === 'todo' && (
+            <motion.div
+                key="todo"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="absolute inset-0 flex flex-col"
+            >
+                {/* Navigation */}
+                <div className="absolute top-4 right-4 z-10 flex gap-2">
+                <button
+                    onClick={() => {
+                    setSelectedDate(subDays(selectedDate, 1));
+                    }}
+                    className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full border border-white/20 transition-all"
+                >
+                    <ChevronLeft className="size-4 text-white" />
+                </button>
+                <button
+                    onClick={() => setTodoView(todoView === 'calendar' ? 'today' : 'calendar')}
+                    className={`p-2 backdrop-blur-sm rounded-full border transition-all ${
+                    todoView === 'calendar'
+                        ? 'bg-white/30 border-white/40'
+                        : 'bg-white/10 hover:bg-white/20 border-white/20'
+                    }`}
+                >
+                    <CalendarIcon className="size-4 text-white" />
+                </button>
+                <button
+                    onClick={() => {
+                    setSelectedDate(new Date(selectedDate.getTime() + 86400000));
+                    }}
+                    className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full border border-white/20 transition-all"
+                >
+                    <ChevronRight className="size-4 text-white" />
+                </button>
+                </div>
+
+                <AnimatePresence mode="wait">
+                {todoView === 'calendar' ? (
+                    <motion.div
+                    key="calendar"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="flex-1"
+                    >
+                    <CalendarView
+                        onDateSelect={handleDateSelect}
+                        selectedDate={selectedDate}
+                        getTodosForDate={getTodosForDate}
+                    />
+                    </motion.div>
+                ) : (
+                    <motion.div
+                    key="todolist"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="flex-1"
+                    >
+                    <TodoList date={selectedDate} />
+                    </motion.div>
+                )}
+                </AnimatePresence>
+            </motion.div>
+            )}
+
+            {activeTab === 'memo' && (
+            <motion.div
+                key="memo"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="absolute inset-0"
+            >
+                <MemoGrid />
+            </motion.div>
+            )}
+        </AnimatePresence>
+        </div>
+    </div>
+
+    {/* Resize Handle */}
+    <div
+        onMouseDown={handleResizeMouseDown}
+        className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize group"
+    >
+        <div className="absolute bottom-1 right-1 w-4 h-4 border-r-2 border-b-2 border-white/30 group-hover:border-white/60 transition-colors" />
+    </div>
     </div>
   );
 }

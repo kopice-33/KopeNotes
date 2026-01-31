@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "dev": "vite",
     "dev:react": "vite",
-    "dev:electron": "electron .",
-    "dist:win": "npm run build && electron-builder --win --x64"
+    "dev:electron": "npm run build && electron .",
+    "dist:win": "npm run build && electron-builder --win --x64",
+    "dist:run": "powershell -File build.ps1"
   },
     "main": "dist-electron/main.js",
   "dependencies": {

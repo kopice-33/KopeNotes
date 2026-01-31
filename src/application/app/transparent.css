@@ -1,0 +1,15 @@
+/* transparent.css */
+html, body, #root {
+  background: transparent !important;
+  background-color: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* * {
+  background: transparent !important;
+  background-color: transparent !important;
+} */
