@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, GripVertical, Calendar as CalendarIcon, Pin, PinOff } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'motion/react';
 import { format, subDays } from 'date-fns';
-import { VerticalTabs } from '@/app/components/VerticalTabs';
-import { Clock } from '@/app/components/Timer/Clock';
-import { Stopwatch } from '@/app/components/Timer/Stopwatch';
-import { TimerPage } from '@/app/components/Timer/TimerPage';
-import { TodoList, Todo } from '@/app/components/Todo/TodoList';
-import { CalendarView } from '@/app/components/Todo/CalendarView';
-import { MemoGrid } from '@/app/components/Memo/MemoGrid';
+import { VerticalTabs } from '@/application/app/components/VerticalTabs';
+import { Clock } from '@/application/app/components/Timer/Clock';
+import { Stopwatch } from '@/application/app/components/Timer/Stopwatch';
+import { TimerPage } from '@/application/app/components/Timer/TimerPage';
+import { TodoList, Todo } from '@/application/app/components/Todo/TodoList';
+import { CalendarView } from '@/application/app/components/Todo/CalendarView';
+import { MemoGrid } from '@/application/app/components/Memo/MemoGrid';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('timer');

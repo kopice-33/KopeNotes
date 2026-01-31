@@ -1,0 +1,15 @@
+{
+  "appId": "com.kopice.kopenotes",
+  "productName": "KopeNotes",
+  "icon":"./icon",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "dist-react",
+    "dist-electron",
+  ],
+  "win": {
+    "target": "portable"
+  }
+}
