@@ -68,21 +68,11 @@ export default function App() {
   }
   }, []);
 
-useEffect(() => {
-  console.log('electronAPI exists?', !!window.electronAPI);
-  console.log('window object:', Object.keys(window));
-}, []);
-
   // Save position and size to localStorage
 useEffect(() => {
   localStorage.setItem('appPosition', JSON.stringify(position));
-  console.log('Sending size to Electron:', size.width, 'x', size.height);
-  // ADD CHECK:
   if (window.electronAPI) {
     window.electronAPI.setWindowSize(size.width, size.height);
-    console.log('Size sent successfully');
-  } else {
-    console.log('electronAPI not available');
   }
 }, [position]);
 
@@ -110,17 +100,38 @@ useEffect(() => {
   }
 }, [isPinned]);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('.drag-handle')) {
-      setIsDragging(true);
-      setDragStart({
-        x: e.clientX - position.x,
-        y: e.clientY - position.y,
-      });
-    } else if ((e.target as HTMLElement).closest('.resize-handle')) {
-      handleResizeMouseDown(e);
+const handleMouseDown = (e: React.MouseEvent) => {
+  if ((e.target as HTMLElement).closest('.drag-handle')) {
+    e.preventDefault();
+    
+    // Calculate mouse offset relative to window
+    const offsetX = e.clientX;
+    const offsetY = e.clientY;
+    
+    if (window.electronAPI) {
+      // Store the offset
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        // Calculate new window position
+        const newX = moveEvent.screenX - offsetX;
+        const newY = moveEvent.screenY - offsetY;
+        
+        // Update your local state AND Electron window
+        setPosition({ x: newX, y: newY });
+        window.electronAPI.setWindowPosition(newX, newY);
+      };
+      
+      const handleMouseUp = () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+      
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
     }
-  };
+  } else if ((e.target as HTMLElement).closest('.resize-handle')) {
+    handleResizeMouseDown(e);
+  }
+};
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -212,11 +223,13 @@ useEffect(() => {
     <div
     className="rounded-2xl shadow-2xl border border-white/20 flex overflow-hidden select-none relative"
     style={{
-        position: 'fixed',
-        left: position.x,
-        top: position.y,
-        width: size.width,
-        height: size.height,
+        width: '100%',      // ← Fill Electron window
+        height: '100%',     // ← Fill Electron window
+        // position: 'fixed',
+        // left: position.x,
+        // top: position.y,
+        // width: size.width,
+        // height: size.height,
         cursor: isDragging ? 'grabbing' : 'default',
         backgroundColor: `rgba(0, 0, 0, ${opacity * 0.4})`,
         backdropFilter: 'blur(12px)',
