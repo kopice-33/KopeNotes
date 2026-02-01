@@ -24,7 +24,7 @@ declare global {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('timer');
-  const [timerPage, setTimerPage] = useState(0); // 0: clock, 1: stopwatch, 2: timer
+  const [timerPage, setTimerPage] = useState(1); // 0: timer, 1: clock, 2: stopwatch
   const [timerDirection, setTimerDirection] = useState<'left' | 'right'>('right');
   const [todoView, setTodoView] = useState<'today' | 'yesterday' | 'calendar'>('today');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -179,18 +179,21 @@ const handleMouseDown = (e: React.MouseEvent) => {
     setTodoView('today');
   };
 
-  const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    const threshold = 100;
-    if (info.offset.x > threshold) {
-      // Swipe right
-      if (timerPage === 1) setTimerPage(0); // clock -> stopwatch
-      else if (timerPage === 2) setTimerPage(1); // timer -> clock
-    } else if (info.offset.x < -threshold) {
-      // Swipe left
-      if (timerPage === 1) setTimerPage(2); // clock -> timer
-      else if (timerPage === 0) setTimerPage(1); // stopwatch -> clock
-    }
-  };
+const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const threshold = 100;
+
+  if (info.offset.x > threshold) {
+    // Swipe RIGHT → Move to LEFT page
+    setTimerDirection('right');
+    if (timerPage === 1) setTimerPage(0);     // Clock → Stopwatch
+    else if (timerPage === 2) setTimerPage(1); // Timer → Clock
+  } else if (info.offset.x < -threshold) {
+    // Swipe LEFT → Move to RIGHT page  
+    setTimerDirection('left');
+    if (timerPage === 0) setTimerPage(1);     // Stopwatch → Clock
+    else if (timerPage === 1) setTimerPage(2); // Clock → Timer
+  }
+};
 
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -293,43 +296,47 @@ const handleMouseDown = (e: React.MouseEvent) => {
                 onDragEnd={handleTimerDragEnd}
                 className="flex-1 relative overflow-hidden"
                 >
-                <AnimatePresence mode="wait" custom={timerPage}>
-                    {timerPage === 0 && (
+                <AnimatePresence mode="wait">
+                {timerPage === 0 && (
                     <motion.div
-                        key="stopwatch"
-                        initial={{ opacity: 0, x: -300 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -300 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0"
+                    key="stopwatch"
+                    initial={{ opacity: 0, x: -300 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -300 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="absolute inset-0"
                     >
-                        <Stopwatch />
+                    <Stopwatch />
                     </motion.div>
-                    )}
-                    {timerPage === 1 && (
+                )}
+                
+                {/* Clock - dynamic based on direction */}
+                {timerPage === 1 && (
                     <motion.div
-                        key="clock"
-                        initial={{ opacity: 0, x: timerPage > 1 ? -300 : 300 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: timerPage > 1 ? 300 : -300 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0"
+                    key="clock"
+                    initial={{ opacity: 0, x: timerDirection === 'left' ? 300 : -300 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: timerDirection === 'left' ? -300 : 300 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="absolute inset-0"
                     >
-                        <Clock />
+                    <Clock />
                     </motion.div>
-                    )}
-                    {timerPage === 2 && (
+                )}
+                
+                {/* Timer - always right */}
+                {timerPage === 2 && (
                     <motion.div
-                        key="timer"
-                        initial={{ opacity: 0, x: 300 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 300 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0"
+                    key="timer"
+                    initial={{ opacity: 0, x: 300 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 300 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="absolute inset-0"
                     >
-                        <TimerPage />
+                    <TimerPage />
                     </motion.div>
-                    )}
+                )}
                 </AnimatePresence>
                 </motion.div>
 
@@ -338,7 +345,8 @@ const handleMouseDown = (e: React.MouseEvent) => {
                 {[0, 1, 2].map((index) => (
                     <button
                     key={index}
-                    onClick={() => setTimerPage(index as 0 | 1 | 2)}
+                    onClick={() => {    setTimerDirection(index > timerPage ? 'left' : 'right');
+    setTimerPage(index);}}
                     className={`w-2 h-2 rounded-full transition-all ${
                         timerPage === index
                         ? 'bg-white w-6'

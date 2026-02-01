@@ -34,13 +34,8 @@ app.on('ready', () => {
 // IPC handlers
 ipcMain.on('set-window-size', (event, width, height) => {
   if (mainWindow) {
-    // Use setContentSize instead of setSize
     mainWindow.setContentSize(width, height);
-    
-    // OR if you want exact size including frame:
     mainWindow.setSize(width, height);
-    
-    console.log('Set size to:', width, 'x', height);
   }
 });
 
