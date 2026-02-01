@@ -11,6 +11,17 @@ import { CalendarView } from '@/application/app/components/Todo/CalendarView';
 import { MemoGrid } from '@/application/app/components/Memo/MemoGrid';
 import './transparent.css';
 
+declare global {
+  interface Window {
+    electronAPI?: {
+      setWindowSize: (width: number, height: number) => void
+      setWindowPosition: (x: number, y: number) => void
+      setWindowOpacity: (opacity: number) => void
+      setWindowPin: (isPinned: boolean) => void
+    }
+  }
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('timer');
   const [timerPage, setTimerPage] = useState(0); // 0: clock, 1: stopwatch, 2: timer
@@ -38,36 +49,66 @@ export default function App() {
     const savedOpacity = localStorage.getItem('appOpacity');
     const savedPinned = localStorage.getItem('appPinned');
 
-    if (savedPosition) {
-      setPosition(JSON.parse(savedPosition));
+  if (savedPosition) {
+    const pos = JSON.parse(savedPosition);
+    setPosition(pos);
+    // Send to Electron on load:
+    if (window.electronAPI) {
+      window.electronAPI.setWindowPosition(pos.x, pos.y);
     }
-    if (savedSize) {
-      setSize(JSON.parse(savedSize));
+  }
+  
+  if (savedSize) {
+    const sz = JSON.parse(savedSize);
+    setSize(sz);
+    // Send to Electron on load:
+    if (window.electronAPI) {
+      window.electronAPI.setWindowSize(sz.width, sz.height);
     }
-    if (savedOpacity) {
-      setOpacity(parseFloat(savedOpacity));
-    }
-    if (savedPinned) {
-      setIsPinned(JSON.parse(savedPinned));
-    }
+  }
   }, []);
 
+useEffect(() => {
+  console.log('electronAPI exists?', !!window.electronAPI);
+  console.log('window object:', Object.keys(window));
+}, []);
+
   // Save position and size to localStorage
-  useEffect(() => {
-    localStorage.setItem('appPosition', JSON.stringify(position));
-  }, [position]);
+useEffect(() => {
+  localStorage.setItem('appPosition', JSON.stringify(position));
+  console.log('Sending size to Electron:', size.width, 'x', size.height);
+  // ADD CHECK:
+  if (window.electronAPI) {
+    window.electronAPI.setWindowSize(size.width, size.height);
+    console.log('Size sent successfully');
+  } else {
+    console.log('electronAPI not available');
+  }
+}, [position]);
 
-  useEffect(() => {
-    localStorage.setItem('appSize', JSON.stringify(size));
-  }, [size]);
+useEffect(() => {
+  localStorage.setItem('appSize', JSON.stringify(size));
+  // ADD CHECK:
+  if (window.electronAPI) {
+    window.electronAPI.setWindowSize(size.width, size.height);
+  }
+}, [size]);
 
-  useEffect(() => {
-    localStorage.setItem('appOpacity', opacity.toString());
-  }, [opacity]);
+useEffect(() => {
+  localStorage.setItem('appOpacity', opacity.toString());
+  // ADD THIS NEW HOOK:
+  if (window.electronAPI) {
+    window.electronAPI.setWindowOpacity(opacity);
+  }
+}, [opacity]);
 
-  useEffect(() => {
-    localStorage.setItem('appPinned', JSON.stringify(isPinned));
-  }, [isPinned]);
+useEffect(() => {
+  localStorage.setItem('appPinned', JSON.stringify(isPinned));
+  // ADD THIS NEW HOOK:
+  if (window.electronAPI) {
+    window.electronAPI.setWindowPin(isPinned);
+  }
+}, [isPinned]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('.drag-handle')) {

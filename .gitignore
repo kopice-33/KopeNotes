@@ -1,7 +1,6 @@
 node_modules/
 dist/
 dist-react/
-dist-electron/
 dist/win-unpacked/
 *.exe
 .env
