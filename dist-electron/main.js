@@ -14,7 +14,7 @@ app.on('ready', () => {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 1000,
-    // frame: false,
+    frame: false,
     transparent: true,
     backgroundColor: '#00000000',
     resizable: true, 
