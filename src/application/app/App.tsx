@@ -47,6 +47,10 @@ export default function App() {
     isRunning: false,
     customTime: '',
     });
+    const [stopwatchState, setStopwatchState] = useState({
+    elapsedTime: 0,
+    isRunning: false,
+    });
 
     const setSelectedTime = (seconds: number) => {
   setTimerState(prev => ({ ...prev, selectedTime: seconds }));
@@ -89,6 +93,23 @@ const setCustomTime = (minutes: string) => {
     }
   }
   }, []);
+
+useEffect(() => {
+  let interval: NodeJS.Timeout | null = null;
+  
+  if (stopwatchState.isRunning) {
+    interval = setInterval(() => {
+      setStopwatchState(prev => ({
+        ...prev,
+        elapsedTime: prev.elapsedTime + 0.01, // This is in SECONDS (0.01 = 10ms)
+      }));
+    }, 10);
+  }
+  
+  return () => {
+    if (interval) clearInterval(interval);
+  };
+}, [stopwatchState.isRunning]);
 
 useEffect(() => {
   let interval: NodeJS.Timeout | null = null;
@@ -346,7 +367,12 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
                     transition={{ duration: 0.15 }}
                     className="absolute inset-0"
                     >
-                    <Stopwatch />
+                        <Stopwatch
+                        elapsedTime={stopwatchState.elapsedTime}
+                        isRunning={stopwatchState.isRunning}
+                        setIsRunning={(running) => setStopwatchState(prev => ({ ...prev, isRunning: running }))}
+                        resetStopwatch={() => setStopwatchState({ elapsedTime: 0, isRunning: false })}
+                        />
                     </motion.div>
                 )}
                 

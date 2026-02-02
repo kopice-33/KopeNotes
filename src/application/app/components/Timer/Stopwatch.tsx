@@ -1,44 +1,30 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 
-export function Stopwatch() {
-  const [isRunning, setIsRunning] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+interface StopwatchProps {
+  elapsedTime: number; 
+  isRunning: boolean;
+  setIsRunning: (running: boolean) => void;
+  resetStopwatch: () => void;
+}
 
-  useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = setInterval(() => {
-        setElapsedTime(prev => prev + 10);
-      }, 10);
-    } else if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isRunning]);
-
-  const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
+export function Stopwatch({ elapsedTime, isRunning, setIsRunning, resetStopwatch }: StopwatchProps) {
+    
+  const formatTime = (seconds: number) => {
+    const totalSeconds = Math.floor(seconds);
     const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    const milliseconds = Math.floor((ms % 1000) / 10);
+    const secs = totalSeconds % 60;
+    const milliseconds = Math.floor((seconds % 1) * 100);
 
     return {
       minutes: minutes.toString().padStart(2, '0'),
-      seconds: seconds.toString().padStart(2, '0'),
+      seconds: secs.toString().padStart(2, '0'),
       milliseconds: milliseconds.toString().padStart(2, '0'),
     };
   };
 
-  const time = formatTime(elapsedTime);
 
-  const handleReset = () => {
-    setIsRunning(false);
-    setElapsedTime(0);
-  };
+  const time = formatTime(elapsedTime);
 
   return (
     <div className="flex flex-col items-center justify-center h-full gap-8">
@@ -58,7 +44,7 @@ export function Stopwatch() {
           )}
         </button>
         <button
-          onClick={handleReset}
+          onClick={resetStopwatch}
           className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 flex items-center justify-center transition-all"
         >
           <RotateCcw className="size-5 text-white" />
