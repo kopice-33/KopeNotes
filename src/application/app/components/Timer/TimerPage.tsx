@@ -32,16 +32,16 @@ export function TimerPage({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-
-    if (hours > 0) {
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+const formatTimeParts = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return {
+    minutes: minutes.toString().padStart(2, '0'),
+    seconds: secs.toString().padStart(2, '0'),
   };
+};
+
+const { minutes, seconds } = formatTimeParts(timeLeft);
 
   const handleReset = () => {
     setIsRunning(false);
@@ -81,11 +81,17 @@ export function TimerPage({
             className="transition-all duration-1000"
             />
         </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-3xl sm:text-4xl font-mono font-light text-white">
-            {formatTime(timeLeft)}
-          </div>
-        </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-5xl sm:text-6xl font-semibold text-white flex items-baseline"
+                style={{ fontFamily: "'Qahiri', sans-serif" }}>
+                {minutes}
+                <span className="inline-flex flex-col justify-center mx-2 gap-0.5 self-center">
+                <div className="w-1 h-1 bg-white/80"></div>
+                <div className="w-1 h-1 bg-white/80"></div>
+                </span>
+                {seconds}
+            </div>
+            </div>
       </div>
 
       <div className="flex gap-2">

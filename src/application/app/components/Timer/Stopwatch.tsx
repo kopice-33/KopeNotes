@@ -28,9 +28,21 @@ export function Stopwatch({ elapsedTime, isRunning, setIsRunning, resetStopwatch
 
   return (
     <div className="flex flex-col items-center justify-center h-full gap-8">
-      <div className="text-6xl font-mono font-light text-white tracking-wider">
-        {time.minutes}:{time.seconds}
-        <span className="text-3xl text-white/70">.{time.milliseconds}</span>
+        <div className="flex items-baseline gap-1">
+            <div className="text-8xl font-semibold text-white flex items-baseline" 
+                style={{ fontFamily: "'Qahiri', sans-serif" }}>
+            {time.minutes}
+            <span className="inline-flex flex-col justify-center mx-3 gap-1 self-center">
+                <div className="w-3 h-3 bg-white/80"></div>
+                <div className="w-3 h-3 bg-white/80"></div>
+            </span>
+            {time.seconds}
+            <span className="text-3xl text-white/70 ml-0.25">
+            <span className="inline-flex flex-col justify-center mx-1 gap-1 self-center">
+                <div className="w-1 h-1 bg-white/70"></div>
+            </span>
+            {time.milliseconds}</span>
+            </div>
       </div>
       <div className="flex gap-3">
         <button
