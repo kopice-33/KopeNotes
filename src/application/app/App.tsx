@@ -302,7 +302,7 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
     }}
     onMouseDown={handleMouseDown}
     >
-    <VerticalTabs activeTab={activeTab} onTabChange={setActiveTab} />
+    
 
     <div className="flex-1 flex flex-col">
         {/* Drag Handle */}
@@ -515,6 +515,7 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
         </AnimatePresence>
         </div>
     </div>
+    <VerticalTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
     {/* Resize Handle */}
     <div
@@ -523,6 +524,8 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
     >
         <div className="absolute bottom-1 right-1 w-4 h-4 border-r-2 border-b-2 border-white/30 group-hover:border-white/60 transition-colors" />
     </div>
+
     </div>
+    
   );
 }

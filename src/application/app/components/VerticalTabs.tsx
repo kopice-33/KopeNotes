@@ -27,7 +27,7 @@ export function VerticalTabs({ activeTab, onTabChange }: VerticalTabsProps) {
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={`
-              relative w-10 h-24 flex items-center justify-center
+              relative w-10 h-20 flex items-center justify-center
               transition-all duration-200
               ${activeTab === tab.id 
                 ? 'bg-white/20 text-white' 
@@ -36,10 +36,10 @@ export function VerticalTabs({ activeTab, onTabChange }: VerticalTabsProps) {
               rounded
             `}
           >
-            <div className="absolute inset-0 flex items-center justify-center" style={{ transform: 'rotate(-90deg)' }}>
+            <div className="absolute inset-0 flex items-center justify-center" style={{ transform: 'rotate(90deg)' }}>
               <div className="flex items-center gap-2 whitespace-nowrap">
                 <Icon className="size-4" />
-                <span className="text-sm font-medium">{tab.label}</span>
+                <span className="text-sm font-medium"></span>
               </div>
             </div>
           </button>
