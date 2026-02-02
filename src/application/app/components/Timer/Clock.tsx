@@ -21,12 +21,32 @@ export function Clock() {
     day: 'numeric' 
   });
 
-  return (
-    <div className="flex flex-col items-center justify-center h-full gap-4">
-      <div className="text-6xl font-mono font-light text-white tracking-wider">
-        {hours}:{minutes}:{seconds}
-      </div>
-      <div className="text-sm text-white/70">{date}</div>
+return (
+    <div className="flex flex-col items-center justify-center h-full gap-0.25">
+        <div className="flex items-baseline gap-1">
+        {/* Main time */}
+        <div className="text-8xl font-semibold text-white flex items-baseline" 
+            style={{ fontFamily: "'Qahiri', sans-serif" }}>
+            {hours}
+              <span className="inline-flex flex-col justify-center mx-3 gap-1 self-center">
+                <div className="w-3 h-3 bg-white/80"></div>
+                <div className="w-3 h-3 bg-white/80"></div>
+            </span>
+            {minutes}
+        </div>
+        
+        {/* Seconds with "sec" label */}
+        <div className="flex flex-col items-center ml-4">
+            <div className="text-4xl font-medium text-white/70" 
+                style={{ fontFamily: "'Qahiri', sans-serif" }}>
+            {seconds}
+            </div>
+        </div>
+        </div>
+          <div className="text-base font-medium text-white/60 tracking-wider -mt-2" 
+            style={{ fontFamily: "'Orbitron', sans-serif" }}>
+        {date}
+        </div>
     </div>
   );
 }

@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 
 const presetTimes = [
-  { label: '5 min', seconds: 300 },
-  { label: '30 min', seconds: 1800 },
-  { label: '1 hr', seconds: 3600 },
+  { label: '5m', seconds: 300 },
+  { label: '30m', seconds: 1800 },
+  { label: '1h', seconds: 3600 },
 ];
 
 export function TimerPage() {
@@ -125,7 +125,7 @@ export function TimerPage() {
       }
       setCustomTime(e.target.value);
     }}
-    placeholder="Min"
+    placeholder="min"
     className="px-3 py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-white/50 w-20"
   />
 </div>

@@ -300,10 +300,10 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
                 {timerPage === 0 && (
                     <motion.div
                     key="stopwatch"
-                    initial={{ opacity: 0, x: -300 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -300 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
                     className="absolute inset-0"
                     >
                     <Stopwatch />
@@ -314,10 +314,10 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
                 {timerPage === 1 && (
                     <motion.div
                     key="clock"
-                    initial={{ opacity: 0, x: timerDirection === 'left' ? 300 : -300 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: timerDirection === 'left' ? -300 : 300 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
                     className="absolute inset-0"
                     >
                     <Clock />
@@ -328,10 +328,10 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
                 {timerPage === 2 && (
                     <motion.div
                     key="timer"
-                    initial={{ opacity: 0, x: 300 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 300 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
                     className="absolute inset-0"
                     >
                     <TimerPage />
