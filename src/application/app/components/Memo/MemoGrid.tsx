@@ -83,6 +83,17 @@ export function MemoGrid() {
 
   const saveMemo = () => {
     if (!editingMemo) return;
+
+  if (!editingMemo.title.trim() && !editingMemo.content.trim()) {
+    if (!isCreating) {
+      // Delete existing memo
+      deleteMemo(editingMemo.id);
+    }
+    // For new memos, just don't save (already returns)
+    setEditingMemo(null);
+    setIsCreating(false);
+    return;
+  }
     
     if (!editingMemo.title.trim() && !editingMemo.content.trim()) {
       setEditingMemo(null);
@@ -162,7 +173,7 @@ export function MemoGrid() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+            className="absolute inset-0 bg-black/50 flex items-center justify-center p-4"
           >
             <motion.div
         ref={modalRef}
