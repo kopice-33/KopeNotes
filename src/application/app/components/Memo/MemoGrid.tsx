@@ -10,28 +10,40 @@ export interface Memo {
     createdAt: number;
 }
 
+const DEFAULT_COLOR = 'rgba(0, 0, 0, 0.2)';
+
 const colors  = [
-  'rgba(255,215,225,0.5)', // Soft pink
-  'rgba(255,232,209,0.5)', // Soft peach
-  'rgba(255,249,209,0.5)', // Soft yellow
-  'rgba(196,255,221, 0.5)', // Soft mint
-  'rgba(249,228,255, 0.5)', // Soft blue
-//   'rgba(223, 186, 255, 0.5)', // Soft purple
-//   'rgba(255, 204, 153, 0.5)', // Orange
-//   'rgba(204, 255, 204, 0.5)', // Light green
-//   'rgba(204, 229, 255, 0.5)', // Light blue
-//   'rgba(255, 204, 255, 0.5)', // Light pink
+  'rgba(255,162,162, 0.3)', // Soft pink
+  'rgba(43,131,229, 0.3)', // Soft peach
+  'rgba(103,255,168, 0.3)', // Soft yellow
+  'rgba(56,25,191, 0.3)', // Soft mint
+  'rgba(118,45,212, 0.3)', // Soft blue
+//   'rgba(223, 186, 255, 0.3)', // Soft purple
+//   'rgba(255, 204, 153, 0.3)', // Orange
+//   'rgba(204, 255, 204, 0.3)', // Light green
+//   'rgba(204, 229, 255, 0.3)', // Light blue
+//   'rgba(255, 204, 255, 0.3)', // Light pink
 ];
 
-export function MemoGrid() {
-  const [memos, setMemos] = useState<Memo[]>([]);
-  const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const [showColorPicker, setShowColorPicker] = useState(false);
 
-  useEffect(() => {
-    const stored = localStorage.getItem('memos');
+export function MemoGrid() {
+    const [memos, setMemos] = useState<Memo[]>([]);
+    const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
+    const [isCreating, setIsCreating] = useState(false);
+    const modalRef = useRef<HTMLDivElement>(null);
+    const [showColorPicker, setShowColorPicker] = useState(false);
+
+    const darkenColor = (color: string) => {
+    if (!color) return 'rgba(255,255,255,0.8)';
+        return color.replace('0.3', '0.7');
+    };
+    
+    const opacityToHex = (opacity: number) => {
+      const hex = Math.round(opacity * 255).toString(16).padStart(2, '0');
+      return hex;
+    };
+    useEffect(() => {
+        const stored = localStorage.getItem('memos');
     if (stored) {
       setMemos(JSON.parse(stored));
     }
@@ -62,7 +74,7 @@ export function MemoGrid() {
       id: Date.now().toString(),
       title: '',
       content: '',
-      color: colors[Math.floor(Math.random() * colors.length)],
+      color: DEFAULT_COLOR,
       createdAt: Date.now(),
     };
     setEditingMemo(newMemo);
@@ -159,7 +171,7 @@ export function MemoGrid() {
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2 }}
         className="w-full max-w-md rounded-lg p-4 relative shadow-2xl"
-        style={{ backgroundColor: editingMemo.color }}
+        style={{ backgroundColor: darkenColor(editingMemo.color) }}
         >
         <input
             type="text"
@@ -188,26 +200,39 @@ export function MemoGrid() {
     </button>
     
     {/* Color picker positioned relative to this button */}
-    {showColorPicker && (
-      <div className="absolute bottom-full left-0 mb-2 w-64 bg-black/90 backdrop-blur-sm p-3 rounded-lg border border-white/20 shadow-2xl z-50">
-        <div className="grid grid-cols-5 gap-x-3 gap-y-3">
-          {colors.map((color) => (
-            <button
-              key={color}
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditingMemo({ ...editingMemo, color });
-                setShowColorPicker(false);
-              }}
-              className={`w-9 h-9 rounded-full border-2 ${
-                editingMemo.color === color ? 'border-white scale-110' : 'border-white/30'
-              } hover:scale-110 transition-transform`}
-              style={{ backgroundColor: color }}
-            />
-          ))}
-        </div>
-      </div>
-    )}
+{showColorPicker && (
+  <div className="absolute bottom-full left-0 mb-2 w-64 bg-black/90 backdrop-blur-sm p-3 rounded-lg border border-white/20 shadow-2xl z-50">
+    <div className="grid grid-cols-5 gap-x-3 gap-y-3">
+      {colors.map((color) => (
+        <button
+          key={color}
+          onClick={(e) => {
+            e.stopPropagation();
+            // If clicking the already selected color, set to default
+            if (editingMemo.color === color) {
+              setEditingMemo({ ...editingMemo, color: DEFAULT_COLOR });
+            } else {
+              // Otherwise, select this color
+              setEditingMemo({ ...editingMemo, color });
+            }
+            setShowColorPicker(false);
+          }}
+          className={`w-9 h-9 rounded-full border-2 relative ${
+            editingMemo.color === color ? 'border-white scale-110' : 'border-white/30'
+          } hover:scale-110 transition-transform`}
+          style={{ backgroundColor: darkenColor(color) }}
+        >
+          {/* Show "X" mark if this is the currently selected color */}
+          {editingMemo.color === color && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-5 h-0.5 bg-white rotate-45 rounded-full"></div>
+            </div>
+          )}
+        </button>
+      ))}
+    </div>
+  </div>
+)}
   </div>
   </div>
 </motion.div>
