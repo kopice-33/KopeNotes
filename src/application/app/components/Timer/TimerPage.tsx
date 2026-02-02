@@ -13,6 +13,9 @@ export function TimerPage() {
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [customTime, setCustomTime] = useState('');
+    const [showCustomInput, setShowCustomInput] = useState(false);
+    const customInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
@@ -105,6 +108,28 @@ export function TimerPage() {
             {preset.label}
           </button>
         ))}
+          {/* Add Custom button */}
+        <div className="flex items-center gap-2">
+  <input
+    type="number"
+    min="1"
+    max="1440"
+    value={customTime}
+    onChange={(e) => {
+      const minutes = parseInt(e.target.value);
+      if (minutes > 0 && minutes <= 1440) {
+        const totalSeconds = minutes * 60;
+        setSelectedTime(totalSeconds);
+        setTimeLeft(totalSeconds);
+        setIsRunning(false);
+      }
+      setCustomTime(e.target.value);
+    }}
+    placeholder="Min"
+    className="px-3 py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-white/50 w-20"
+  />
+</div>
+
       </div>
 
       <div className="flex gap-3">
