@@ -7,36 +7,30 @@ const presetTimes = [
   { label: '1h', seconds: 3600 },
 ];
 
-export function TimerPage() {
-  const [selectedTime, setSelectedTime] = useState(300);
-  const [timeLeft, setTimeLeft] = useState(300);
-  const [isRunning, setIsRunning] = useState(false);
+interface TimerPageProps {
+  selectedTime: number;
+  timeLeft: number;
+  isRunning: boolean;
+  customTime: string;
+  setSelectedTime: (seconds: number) => void;
+  setTimeLeft: (seconds: number) => void;
+  setIsRunning: (running: boolean) => void;
+  setCustomTime: (minutes: string) => void;
+}
+
+export function TimerPage({
+  selectedTime,
+  timeLeft,
+  isRunning,
+  customTime,
+  setSelectedTime,
+  setTimeLeft,
+  setIsRunning,
+  setCustomTime
+}: TimerPageProps) {
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [customTime, setCustomTime] = useState('');
-    const [showCustomInput, setShowCustomInput] = useState(false);
-    const customInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isRunning && timeLeft > 0) {
-      intervalRef.current = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            setIsRunning(false);
-            // Timer finished
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isRunning, timeLeft]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -55,7 +49,7 @@ export function TimerPage() {
   };
 
   const handlePresetClick = (seconds: number) => {
-    setSelectedTime(seconds);
+    setSelectedTime(seconds); // Use prop setter
     setTimeLeft(seconds);
     setIsRunning(false);
   };
@@ -63,32 +57,32 @@ export function TimerPage() {
   const progress = ((selectedTime - timeLeft) / selectedTime) * 100;
 
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-8 p-6">
-      <div className="relative w-48 h-48">
-        <svg className="w-full h-full transform -rotate-90">
-          <circle
-            cx="96"
-            cy="96"
-            r="88"
+    <div className="flex flex-col items-center justify-center h-full gap-4 p-4">
+      <div className="relative w-32 h-32 sm:w-48 sm:h-48">
+        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <circle
+            cx="50%"
+            cy="50%"
+            r="45%"
             stroke="rgba(255,255,255,0.1)"
-            strokeWidth="8"
+            strokeWidth="4%"
             fill="none"
-          />
-          <circle
-            cx="96"
-            cy="96"
-            r="88"
+            />
+            <circle
+            cx="50%"
+            cy="50%"
+            r="45%"
             stroke="rgba(255,255,255,0.8)"
-            strokeWidth="8"
+            strokeWidth="4%"
             fill="none"
-            strokeDasharray={`${2 * Math.PI * 88}`}
-            strokeDashoffset={`${2 * Math.PI * 88 * (1 - progress / 100)}`}
+            strokeDasharray={`${2 * Math.PI * 45}`}
+            strokeDashoffset={`${2 * Math.PI * 45 * (1 - progress / 100)}`}
             strokeLinecap="round"
             className="transition-all duration-1000"
-          />
+            />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-4xl font-mono font-light text-white">
+          <div className="text-3xl sm:text-4xl font-mono font-light text-white">
             {formatTime(timeLeft)}
           </div>
         </div>

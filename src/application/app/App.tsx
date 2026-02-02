@@ -41,6 +41,28 @@ export default function App() {
     startWidth: 0,
     startHeight: 0,
   });
+    const [timerState, setTimerState] = useState({
+    selectedTime: 300,
+    timeLeft: 300,
+    isRunning: false,
+    customTime: '',
+    });
+
+    const setSelectedTime = (seconds: number) => {
+  setTimerState(prev => ({ ...prev, selectedTime: seconds }));
+};
+
+const setTimeLeft = (seconds: number) => {
+  setTimerState(prev => ({ ...prev, timeLeft: seconds }));
+};
+
+const setIsRunning = (running: boolean) => {
+  setTimerState(prev => ({ ...prev, isRunning: running }));
+};
+
+const setCustomTime = (minutes: string) => {
+  setTimerState(prev => ({ ...prev, customTime: minutes }));
+};
 
   // Load saved position and size from localStorage
   useEffect(() => {
@@ -67,6 +89,25 @@ export default function App() {
     }
   }
   }, []);
+
+useEffect(() => {
+  let interval: NodeJS.Timeout | null = null;
+  
+  if (timerState.isRunning && timerState.timeLeft > 0) {
+    interval = setInterval(() => {
+      setTimerState(prev => {
+        if (prev.timeLeft <= 1) {
+          return { ...prev, isRunning: false, timeLeft: 0 };
+        }
+        return { ...prev, timeLeft: prev.timeLeft - 1 };
+      });
+    }, 1000);
+  }
+  
+  return () => {
+    if (interval) clearInterval(interval);
+  };
+}, [timerState.isRunning, timerState.timeLeft]);
 
   // Save position and size to localStorage
 useEffect(() => {
@@ -145,8 +186,8 @@ const handleMouseDown = (e: React.MouseEvent) => {
         const deltaX = e.clientX - resizeRef.current.startX;
         const deltaY = e.clientY - resizeRef.current.startY;
         setSize({
-          width: Math.max(400, resizeRef.current.startWidth + deltaX),
-          height: Math.max(500, resizeRef.current.startHeight + deltaY),
+          width: Math.max(350, resizeRef.current.startWidth + deltaX),
+          height: Math.max(300, resizeRef.current.startHeight + deltaY),
         });
       }
     };
@@ -234,7 +275,7 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
         // width: size.width,
         // height: size.height,
         cursor: isDragging ? 'grabbing' : 'default',
-        backgroundColor: `rgba(0, 0, 0, ${opacity * 0.4})`,
+        backgroundColor: `rgba(0, 0, 0, ${opacity * 0.8})`,
         backdropFilter: 'blur(12px)',
         zIndex: isPinned ? 9999 : 'auto',
     }}
@@ -248,7 +289,6 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
         <GripVertical className="size-5 text-white/40" />
         
         <div className="flex items-center gap-2 flex-1">
-            <span className="text-xs text-white/50">Opacity</span>
             <input
             type="range"
             min="0.3"
@@ -326,15 +366,24 @@ const handleTimerDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info:
                 
                 {/* Timer - always right */}
                 {timerPage === 2 && (
-                    <motion.div
-                    key="timer"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute inset-0"
+                     <motion.div
+                        key="timer"
+                        initial={{ opacity: 0, x: 300 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 300 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="absolute inset-0"
                     >
-                    <TimerPage />
+                        <TimerPage
+                        selectedTime={timerState.selectedTime}
+                        timeLeft={timerState.timeLeft}
+                        isRunning={timerState.isRunning}
+                        customTime={timerState.customTime}
+                        setSelectedTime={setSelectedTime}
+                        setTimeLeft={setTimeLeft}
+                        setIsRunning={setIsRunning}
+                        setCustomTime={setCustomTime}
+                        />
                     </motion.div>
                 )}
                 </AnimatePresence>
