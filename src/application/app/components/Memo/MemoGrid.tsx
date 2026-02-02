@@ -3,20 +3,24 @@ import { Plus, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export interface Memo {
-  id: string;
-  title: string;
-  content: string;
-  color: string;
-  createdAt: number;
+    id: string;
+    title: string;
+    content: string;
+    color: string;
+    createdAt: number;
 }
 
-const colors = [
-  'rgba(255, 179, 186, 0.3)',
-  'rgba(255, 223, 186, 0.3)',
-  'rgba(255, 255, 186, 0.3)',
-  'rgba(186, 255, 201, 0.3)',
-  'rgba(186, 225, 255, 0.3)',
-  'rgba(223, 186, 255, 0.3)',
+const colors  = [
+  'rgba(255,215,225,0.5)', // Soft pink
+  'rgba(255,232,209,0.5)', // Soft peach
+  'rgba(255,249,209,0.5)', // Soft yellow
+  'rgba(196,255,221, 0.5)', // Soft mint
+  'rgba(249,228,255, 0.5)', // Soft blue
+//   'rgba(223, 186, 255, 0.5)', // Soft purple
+//   'rgba(255, 204, 153, 0.5)', // Orange
+//   'rgba(204, 255, 204, 0.5)', // Light green
+//   'rgba(204, 229, 255, 0.5)', // Light blue
+//   'rgba(255, 204, 255, 0.5)', // Light pink
 ];
 
 export function MemoGrid() {
@@ -24,6 +28,7 @@ export function MemoGrid() {
   const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('memos');
@@ -104,7 +109,10 @@ export function MemoGrid() {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4" style={{
+    scrollbarWidth: 'thin',
+    scrollbarColor: 'rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05)',
+  }}>
         <div className="grid grid-cols-2 gap-3">
           {memos.map((memo) => (
             <div
@@ -145,29 +153,64 @@ export function MemoGrid() {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
           >
             <motion.div
-              ref={modalRef}
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.2 }}
-              className="w-full max-w-md rounded-lg p-4 relative shadow-2xl"
-              style={{ backgroundColor: editingMemo.color }}
-            >
-              <input
-                type="text"
-                value={editingMemo.title}
-                onChange={(e) => setEditingMemo({ ...editingMemo, title: e.target.value })}
-                placeholder="Title"
-                autoFocus
-                className="w-full bg-transparent border-none text-white placeholder:text-white/60 font-medium text-lg mb-2 focus:outline-none"
-              />
-              <textarea
-                value={editingMemo.content}
-                onChange={(e) => setEditingMemo({ ...editingMemo, content: e.target.value })}
-                placeholder="Take a note..."
-                className="w-full h-48 bg-transparent border-none text-white placeholder:text-white/60 resize-none focus:outline-none"
-              />
-            </motion.div>
+        ref={modalRef}
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ duration: 0.2 }}
+        className="w-full max-w-md rounded-lg p-4 relative shadow-2xl"
+        style={{ backgroundColor: editingMemo.color }}
+        >
+        <input
+            type="text"
+            value={editingMemo.title}
+            onChange={(e) => setEditingMemo({ ...editingMemo, title: e.target.value })}
+            placeholder="Title"
+            autoFocus
+            className="w-full bg-transparent border-none text-white placeholder:text-white/60 font-medium text-lg mb-2 focus:outline-none"
+        />
+        <textarea
+            value={editingMemo.content}
+            onChange={(e) => setEditingMemo({ ...editingMemo, content: e.target.value })}
+            placeholder="Take a note..."
+            className="w-full h-48 bg-transparent border-none text-white placeholder:text-white/60 resize-none focus:outline-none"
+        />
+        
+<div className="flex items-center justify-between mt-3 pt-3 border-t border-white/20 relative">
+  <div className="relative">
+    <button
+      type="button"
+      onClick={() => setShowColorPicker(!showColorPicker)}
+      className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded text-sm transition-colors"
+    >
+      <div className="w-5 h-5 rounded-full border border-white/40" 
+           style={{ backgroundColor: editingMemo.color }} />
+    </button>
+    
+    {/* Color picker positioned relative to this button */}
+    {showColorPicker && (
+      <div className="absolute bottom-full left-0 mb-2 w-64 bg-black/90 backdrop-blur-sm p-3 rounded-lg border border-white/20 shadow-2xl z-50">
+        <div className="grid grid-cols-5 gap-x-3 gap-y-3">
+          {colors.map((color) => (
+            <button
+              key={color}
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditingMemo({ ...editingMemo, color });
+                setShowColorPicker(false);
+              }}
+              className={`w-9 h-9 rounded-full border-2 ${
+                editingMemo.color === color ? 'border-white scale-110' : 'border-white/30'
+              } hover:scale-110 transition-transform`}
+              style={{ backgroundColor: color }}
+            />
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+  </div>
+</motion.div>
           </motion.div>
         </AnimatePresence>
       )}
